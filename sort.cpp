@@ -1,23 +1,22 @@
 #include <iostream>
 #include <ctime>
-#include <cstdlib>
 #include <omp.h>
 
 using namespace std;
 
+
 void bubbleSort(int arr[], int n)
 {
-    for (int i = 0; i < n - 1; ++i)
+    for (int i = 0; i < n - 1; i++)
     {
-        for (int j = 0; j < n - i - 1; ++j)
+        for (int j = 0; j < n - i - 1; j++)
         {
             if (arr[j] > arr[j + 1])
-            {
                 swap(arr[j], arr[j + 1]);
-            }
         }
     }
 }
+
 
 void merge(int arr[], int l, int m, int r)
 {
@@ -74,18 +73,19 @@ void merge(int arr[], int l, int m, int r)
     delete[] R;
 }
 
+
 void mergeSort(int arr[], int l, int r)
 {
     if (l < r)
     {
         int m = l + (r - l) / 2;
-        #pragma omp parallel sections
+#pragma omp parallel sections
         {
-            #pragma omp section
+#pragma omp section
             {
                 mergeSort(arr, l, m);
             }
-            #pragma omp section
+#pragma omp section
             {
                 mergeSort(arr, m + 1, r);
             }
@@ -94,6 +94,7 @@ void mergeSort(int arr[], int l, int r)
         merge(arr, l, m, r);
     }
 }
+
 
 void printArray(int arr[], int size)
 {
@@ -104,77 +105,80 @@ void printArray(int arr[], int size)
     cout << endl;
 }
 
+
 int main()
 {
     int n;
-    cout << "Enter the size of the array: ";
+    cout << "\nEnter the size of the array: ";
     cin >> n;
 
     int *arr = new int[n];
-    srand(time(0));
-    for (int i = 0; i < n; ++i)
-    {
-        arr[i] = rand() % 100;
-    }
     
+    for (int i = 0; i < n; ++i)
+        arr[i] = rand() % 100;
 
-    cout << "Original array: ";
+    cout << "\nOriginal array:\n";
     printArray(arr, n);
+
 
     // Sequential Bubble Sort
     clock_t start = clock();
     bubbleSort(arr, n);
     clock_t end = clock();
 
-    cout << "Sequential Bubble Sorted array: ";
+    cout << "\nSequential Bubble Sorted array:\n";
     printArray(arr, n);
 
     double sequentialBubbleTime = double(end - start) / CLOCKS_PER_SEC;
 
+
     // Parallel Bubble Sort
     start = clock();
-    #pragma omp parallel
+#pragma omp parallel
     {
         bubbleSort(arr, n);
     }
     end = clock();
 
-    cout << "Parallel Bubble Sorted array: ";
+    cout << "\nParallel Bubble Sorted array:\n";
     printArray(arr, n);
 
     double parallelBubbleTime = double(end - start) / CLOCKS_PER_SEC;
+
 
     // Merge Sort
     start = clock();
     mergeSort(arr, 0, n - 1);
     end = clock();
 
-    cout << "Sequential Merge Sorted array: ";
+    cout << "\nSequential Merge Sorted array:\n";
     printArray(arr, n);
 
     double sequentialMergeTime = double(end - start) / CLOCKS_PER_SEC;
 
+
     // Parallel Merge Sort
     start = clock();
-    #pragma omp parallel
+#pragma omp parallel
     {
-        #pragma omp single
+#pragma omp single
         {
             mergeSort(arr, 0, n - 1);
         }
     }
     end = clock();
 
-    cout << "Parallel Merge Sorted array: ";
+    cout << "\nParallel Merge Sorted array:\n";
     printArray(arr, n);
 
     double parallelMergeTime = double(end - start) / CLOCKS_PER_SEC;
 
+
     // Performance measurement
-    cout << "Sequential Bubble Sort Time: " << sequentialBubbleTime << " seconds" << endl;
-    cout << "Parallel Bubble Sort Time: " << parallelBubbleTime << " seconds" << endl;
-    cout << "Sequential Merge Sort Time: " << sequentialMergeTime << " seconds" << endl;
-    cout << "Parallel Merge Sort Time: " << parallelMergeTime << " seconds" << endl;
+    cout << "\n\nSequential Bubble Sort Time: " << sequentialBubbleTime << " seconds" << endl;
+    cout << "\nParallel Bubble Sort Time: " << parallelBubbleTime << " seconds" << endl;
+    cout << "\nSequential Merge Sort Time: " << sequentialMergeTime << " seconds" << endl;
+    cout << "\nParallel Merge Sort Time: " << parallelMergeTime << " seconds" << endl;
 
     delete[] arr;
 
