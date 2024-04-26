@@ -114,9 +114,12 @@ int main()
 
     int *arr = new int[n];
     
-    for (int i = 0; i < n; ++i)
-        arr[i] = rand() % 100;
-
+    for (int i = 0; i < n; i++)
+    {
+        cout << "Element " << i + 1 << ": ";
+        cin >> arr[i];
+    }
+    
     cout << "\nOriginal array:\n";
     printArray(arr, n);
 
